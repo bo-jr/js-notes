@@ -132,3 +132,118 @@ const groupsByRatings = books.reduce((groupedBooks, book) => {
   groupedBooks[key].push(book)
   return groupedBooks
 }, {})
+
+// Examples of spread
+const feline = {
+  legs: 4,
+  family: "Felidae"
+}
+
+const canine = {
+  family: "Caninae",
+  furry: true
+}
+
+const dog = {
+  ...canine,
+  isPet: true,
+  adorable: true
+}
+
+const houseCat = {
+  ...feline,
+  isGrumpy: true,
+  personality: "unpredictable"
+}
+
+const catDog = {
+  ...canine,
+  ...feline
+}
+
+// Examples of rest
+function sum(...nums) {
+  return nums.reduce((total, curVal) => {
+    return total + curVal
+  })
+}
+
+function fullName(first, last, ...titles) {
+  console.log('first', first)
+  console.log('last', last)
+  console.log('titles', titles)
+}
+
+// fullName('john', 'smith', 'LOTR', 'Hobbit')
+
+const multiply = (...nums) => (
+  nums.reduce((total, curVal) => total * curVal)
+)
+
+// Destructuring Arrays
+const raceResults = [
+  'Eliud Kipchoge',
+  'Feyisa Lelisa',
+  'Galen Rupp',
+  'Ghirmay Ghebreslassie',
+  'Alophonce Simbu',
+  'Jared Ward'
+]
+
+const [gold, silver, bronze] = raceResults
+const [first, , , fourth] = raceResults
+const [winner, ...others] = raceResults
+const [tempWinner, , ...tempOthers] = raceResults
+
+// Destructuring Objects
+const runner = {
+  xFirst: 'Eliud',
+  xLast: 'Kipchoge',
+  xCountry: 'Kenya',
+  xTitle: 'Elder of the Order of the Golden Heart of Kenya'
+}
+
+const {xFirst, xLast, xTime, ...other} = runner;
+
+// Nested Destructuring
+const raceRes = [{
+    first: 'Eliud',
+    last: 'Kipchoge',
+    country: 'Kenya'
+  }, 
+  {
+    first: 'Feyisa',
+    last: 'Lilesa',
+    country: 'Ethiopia'
+  }, 
+  {
+    first: 'Galen',
+    last: 'Rupp',
+    country: 'United States'
+  }
+]
+
+const [{first: goldWinner}, {country}] = raceRes
+const [, silverMedal] = raceRes;
+
+// Destructuring parameters
+function print(person) {
+  const {xFirst, xLast, xTitle} = person;
+  console.log(`${xFirst} ${xLast}`)
+} // print(runner)
+
+// above function can be also written as:
+function anotherPrint({xFirst, xLast, xTitle}) {
+  console.log(`${xFirst} ${xLast} ${xTitle}`)
+} // anotherPrint(runner)
+
+//example using an array instead of custom object
+const resp = [
+  'HTTP/1.1',
+  '200 OK',
+  'application/json'
+]
+
+function parseResponse([protocol, statusCode, contentType]) {
+  console.log(`Status: ${statusCode}`)
+}
