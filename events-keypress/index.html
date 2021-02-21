@@ -14,6 +14,23 @@
   <h3>Shopping List</h3>
   <input type="text" id='addItem' placeholder='enter an item'>
   <ul id='items'></ul>
+
+
+  <form id='signup-form' method='get'>
+    <input type="text" placeholder='credit card' id='credit-card' name='creditCard'>
+    <label>
+      I agree to pay with this form of payment
+      <input type="checkbox" id='terms' name='terms'>
+    </label>
+
+    <select id="payment-form" name='paymenForm'>
+      <option value="dollar-bills">Dollar bills</option>
+      <option value="check">Check</option>
+      <option value="coin">Coin</option>
+    </select>
+    <!-- submit input sends stuff -->
+    <input type="submit"> 
+  </form>
   <script src="app.js"></script>
 </body>
 
