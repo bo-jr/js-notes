@@ -25,3 +25,38 @@ addItemInput.addEventListener('keypress', function(e) {
     this.value = ''
   }
 })
+
+const form = document.querySelector('#signup-form')
+
+const creditCardInput = document.querySelector('#credit-card')
+const termsCheckbox = document.querySelector('#terms')
+const paymentDropdown = document.querySelector('#payment-form')
+
+form.addEventListener('submit', function(e) {
+  console.log('cc number: ', creditCardInput.value)
+  console.log('terms: ', termsCheckbox.checked)
+  console.log('paymentForm: ', paymentDropdown.value)
+  e.preventDefault() // prevents from refreshing the page
+})
+
+// const formData = {}
+// creditCardInput.addEventListener('input', e => {
+//   formData['cc'] = e.target.value
+// })
+
+// termsCheckbox.addEventListener('input', e => {
+//   formData['terms'] = e.target.value
+// })
+
+// paymentDropdown.addEventListener('input', e => {
+//   formData['payment type'] = e.target.value
+// })
+
+const formData = {}
+for (let input of [creditCardInput, termsCheckbox, paymentDropdown]) {
+  input.addEventListener('change', ({target}) => {
+    const {name, type, value, checked} = target
+    formData[name] = type ==='checkbox' ? checked : value
+    // formData[e.target.name] = e.target.value
+  })
+}
