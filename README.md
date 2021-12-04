@@ -11,4 +11,5 @@
 9. async-await
 10. prototype-oop
 11. drawing-animations
-12. 
+12. movie-battle (Application Design Patterns)
+13. 
