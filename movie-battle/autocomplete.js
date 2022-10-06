@@ -15,18 +15,18 @@ const createAutoComplete = ({
       </div>
     </div>
   `;
-  
+
   const input = root.querySelector('input');
   const dropdown = root.querySelector('.dropdown');
   const resultsWrapper = root.querySelector('.results');
-  
+
   const onInput = async event => {
     const items = await fetchData(event.target.value);
     if (!items.length) {
       dropdown.classList.remove('is-active');
       return;
     }
-    
+
     // show all the items
     resultsWrapper.innerHTML = '';
     dropdown.classList.add('is-active');
@@ -39,17 +39,17 @@ const createAutoComplete = ({
       option.addEventListener('click', () => {
         dropdown.classList.remove('is-active') // turn autocomplete as inactive once it is clicked
         input.value = inputValue(item);
-  
+
         onOptionSelect(item);
       });
-  
+
       resultsWrapper.appendChild(option);
     }
   };
-  
+
   // on input (listening for an event), fetch data (has debouncer)
   input.addEventListener('input', debounce(onInput, 500));
-  
+
   // remove the list if clicked outside the autocomplete dropdown
   document.addEventListener('click', event => {
     if (!root.contains(event.target)) {
