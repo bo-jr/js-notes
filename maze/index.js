@@ -1,21 +1,27 @@
-const { Engine, Render, Runner, World, Bodies } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells = 3
-const width = 600
-const height = 600
-const wallSize = 5
+const cellsX = 2
+const cellsY = 2
+const width = window.innerWidth
+const height = window.innerHeight
+const wallSize = 2
 const borderSize = 1
+const ballVelocity = 1
 
-const unitLength = width / cells
+const unitLengthX = width / cellsX
+const unitLengthY = height / cellsY
 
+console.log('width: ' + width)
+console.log('height: ' + height)
 
 const engine = Engine.create()
+engine.world.gravity.y = 0 // disable gravity
 const { world } = engine
 const render = Render.create({
   element: document.body,
   engine: engine,
   options: {
-    wireframes: true,
+    wireframes: false,
     width,
     height
   }
@@ -42,14 +48,14 @@ World.add(world, walls)
 //   }
 // }
 // another way to make it is:
-const grid = Array(cells).fill(null).map(() => Array(cells).fill(false)) // row then columns
+const grid = Array(cellsY).fill(null).map(() => Array(cellsX).fill(false)) // row then columns
 
 // Grids
-const verticals = Array(cells).fill(null).map(() => Array(cells - 1).fill(false))
-const horizontals = Array(cells - 1).fill(null).map(() => Array(cells).fill(false))
+const verticals = Array(cellsY).fill(null).map(() => Array(cellsX - 1).fill(false))
+const horizontals = Array(cellsY - 1).fill(null).map(() => Array(cellsX).fill(false))
 
-const startRow = Math.floor(Math.random() * cells)
-const startColumn = Math.floor(Math.random() * cells)
+const startRow = Math.floor(Math.random() * cellsY)
+const startColumn = Math.floor(Math.random() * cellsX)
 
 // shuffle neighbor array
 const shuffle = (arr) => {
@@ -88,7 +94,7 @@ const stepThroughCell = (row, column) => {
     const [nextRow, nextColumn, direction] = neighbor
 
     // See if that neighbor is out of bounds - if it is, then just continue loop
-    if (nextRow < 0 || nextColumn >= cells || nextColumn < 0 || nextRow >= cells) {
+    if (nextRow < 0 || nextColumn >= cellsX || nextColumn < 0 || nextRow >= cellsY) {
       continue
     }
 
@@ -130,11 +136,16 @@ horizontals.forEach((row, rowIndex) => {
     }
 
     const wall = Bodies.rectangle(
-      columnIndex * unitLength + unitLength / 2,
-      rowIndex * unitLength + unitLength,
-      unitLength,
+      columnIndex * unitLengthX + unitLengthX / 2,
+      rowIndex * unitLengthY + unitLengthY,
+      unitLengthX,
       wallSize,
-      { isStatic: true }
+      { isStatic: true,
+        label: 'wall',
+        render: {
+          fillStyle: 'gray'
+        }
+      }
     )
     World.add(world, wall)
   })
@@ -147,11 +158,16 @@ verticals.forEach((row, rowIndex) => {
     }
 
     const wall = Bodies.rectangle(
-      unitLength + unitLength * columnIndex,
-      unitLength / 2 + rowIndex * unitLength,
+      unitLengthX + unitLengthX * columnIndex,
+      unitLengthY / 2 + rowIndex * unitLengthY,
       wallSize,
-      unitLength,
-      { isStatic: true }
+      unitLengthY,
+      { isStatic: true,
+        label: 'wall',
+        render: {
+          fillStyle: 'gray'
+        }
+      }
     )
     World.add(world, wall)
   })
@@ -159,10 +175,67 @@ verticals.forEach((row, rowIndex) => {
 
 // Create goal (end)
 const goal = Bodies.rectangle(
-  width - unitLength / 2,
-  height - unitLength / 2,
-  unitLength * 0.50,
-  unitLength * 0.50,
-  { isStatic: true }
+  width - unitLengthX / 2,
+  height - unitLengthY / 2,
+  unitLengthX * 0.50,
+  unitLengthY * 0.50,
+  {
+    isStatic: true,
+    label: 'goal',
+    render: {
+      fillStyle: 'green'
+    }
+  }
 )
 World.add(world, goal)
+
+// Playing ball
+const ballRadius = Math.min(unitLengthX, unitLengthY) / 4
+const ball = Bodies.circle(
+  unitLengthX / 2,
+  unitLengthY / 2,
+  ballRadius,
+  {
+    label: 'ball',
+    render: {
+      fillStyle: 'blue'
+    }
+  }
+)
+World.add(world, ball)
+
+// WASD
+document.addEventListener('keydown', event => {
+  const { x, y } = ball.velocity
+
+  if (event.keyCode === 87) {
+    Body.setVelocity(ball, { x, y: y - ballVelocity })
+  }
+  if (event.keyCode === 65) {
+    Body.setVelocity(ball, { x: x - ballVelocity, y })
+  }
+  if (event.keyCode === 83) {
+    Body.setVelocity(ball, { x, y: y + ballVelocity })
+  }
+  if (event.keyCode === 68) {
+    Body.setVelocity(ball, { x: x + ballVelocity, y })
+  }
+})
+
+// Win Condition
+Events.on(engine, 'collisionStart', event => {
+  event.pairs.forEach((collision) => {
+    const labels = ['ball', 'goal']
+
+    if (labels.includes(collision.bodyA.label) && labels.includes(collision.bodyB.label)) {
+      console.log("You win!")
+      document.querySelector('.winner').classList.remove('hidden')
+      engine.world.gravity.y = 1 // turn gravity on
+      world.bodies.forEach(body => {
+        if (body.label === 'wall') {
+          Body.setStatic(body, false)
+        }
+      })
+    }
+  })
+})
