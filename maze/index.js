@@ -3,6 +3,11 @@ const { Engine, Render, Runner, World, Bodies } = Matter;
 const cells = 3
 const width = 600
 const height = 600
+const wallSize = 5
+const borderSize = 1
+
+const unitLength = width / cells
+
 
 const engine = Engine.create()
 const { world } = engine
@@ -21,10 +26,10 @@ Runner.run(Runner.create(), engine)
 
 // Walls
 const walls = [
-  Bodies.rectangle(width / 2, 0, width, 40, { isStatic: true }),
-  Bodies.rectangle(width / 2, height, width, 40, { isStatic: true }),
-  Bodies.rectangle(0, height / 2, 40, height, { isStatic: true }),
-  Bodies.rectangle(width, height / 2, 40, height, { isStatic: true }),
+  Bodies.rectangle(width / 2, 0, width, borderSize, { isStatic: true }),
+  Bodies.rectangle(width / 2, height, width, borderSize, { isStatic: true }),
+  Bodies.rectangle(0, height / 2, borderSize, height, { isStatic: true }),
+  Bodies.rectangle(width, height / 2, borderSize, height, { isStatic: true }),
 ]
 World.add(world, walls)
 
@@ -112,22 +117,52 @@ const stepThroughCell = (row, column) => {
 }
 
 stepThroughCell(startRow, startColumn)
-console.log(grid)
-console.log(verticals)
-console.log(horizontals)
+// console.log(grid)
+// console.log(verticals)
+// console.log(horizontals)
 
 // Draw maze walls
 // Bodies.rectangle(width / 2, 0, width, 40, { isStatic: true }),
-horizontals.forEach((row) => {
-  row.forEach((open) => {
+horizontals.forEach((row, rowIndex) => {
+  row.forEach((open, columnIndex) => {
     if (open) {
       return
     }
 
-    // const wall = Bodies.rectangle(x, y, w, h, { isStatic: true })
+    const wall = Bodies.rectangle(
+      columnIndex * unitLength + unitLength / 2,
+      rowIndex * unitLength + unitLength,
+      unitLength,
+      wallSize,
+      { isStatic: true }
+    )
+    World.add(world, wall)
   })
 })
 
-verticals.forEach((column) => {
-  console.log(column)
+verticals.forEach((row, rowIndex) => {
+  row.forEach((open, columnIndex) => {
+    if (open) {
+      return
+    }
+
+    const wall = Bodies.rectangle(
+      unitLength + unitLength * columnIndex,
+      unitLength / 2 + rowIndex * unitLength,
+      wallSize,
+      unitLength,
+      { isStatic: true }
+    )
+    World.add(world, wall)
+  })
 })
+
+// Create goal (end)
+const goal = Bodies.rectangle(
+  width - unitLength / 2,
+  height - unitLength / 2,
+  unitLength * 0.50,
+  unitLength * 0.50,
+  { isStatic: true }
+)
+World.add(world, goal)
