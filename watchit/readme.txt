@@ -3,3 +3,7 @@
 3. chmod u+x index.js
 4. npm link
 5. watchit :)
+
+---
+
+`watchit test.js`
